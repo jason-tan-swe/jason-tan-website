@@ -1,0 +1,8 @@
+{
+  "id": 4,
+  "title": "Quizzy",
+  "description": "A multi-player anime-inspired quiz application based off of Kahoot! built with the learning opportunity of SocketIO and Timers in mind",
+  "image": "/projects/quizzy.png",
+  "alt": "Quizzy: Jason Tan Software Engineer",
+  "link": "https://quiz-app-swart-beta.vercel.app/"
+}

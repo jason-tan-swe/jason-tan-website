@@ -1,0 +1,8 @@
+{
+  "id": 3,
+  "title": "Apple Clock Clone",
+  "description": "A replica of Apple's mobile application \"Clock\" app designed with accessibility and ease of use built using React and Tailwind",
+  "image": "/projects/apple-clock.png",
+  "alt": "Apple Clock Clone: Jason Tan Software Engineer",
+  "link": "https://apple-clock-clone.vercel.app/"
+}

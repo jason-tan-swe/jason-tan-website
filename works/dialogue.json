@@ -1,15 +1,15 @@
 {
-  "id": 1,
-  "title": "Microsoft + Nuance",
+  "id": 2,
+  "title": "Dialogue",
   "description": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries,",
-  "image": "/experience/microsoft.png",
-  "link": "microsoft",
-  "alt": "Microsoft and Nuance: Jason Tan Software Engineer Intern",
+  "image": "/experience/dialogue.svg",
+  "alt": "Dialogue Health: Jason Tan Software Engineer Intern",
+  "link": "dialogue",
   "role": {
     "name": "Software Engineer Intern",
-    "type": "Frontend",
-    "length": "May 2023 - July 2023",
+    "type": "Full-stack/Mobile",
+    "length": "May 2024 - Present",
     "jobType": "full-time"
   },
-  "stack": "React, TypeScript, Jest, Cucumber, Griffel, FluentUI"
+  "stack": "Next.js, React, TypeScript, Supabase"
 }
