@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sourceCodePro } from "@/app/fonts";
 import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +10,19 @@ import "react-modern-drawer/dist/index.css";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [navBackground, setNavBackground] = useState("#fafafa");
+
+  useEffect(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    ) {
+      setNavBackground("#27272a");
+    } else {
+      setNavBackground("#fafafa");
+    }
+  }, []);
 
   const drawerItemStyles = "px-4 py-3 text-center font-bold";
   const navItemStyles = "h-full px-4 flex items-center";
@@ -72,11 +85,7 @@ export default function Navbar() {
         style={{
           flex: 1,
           height: "fit-content",
-          backgroundColor:
-            window.matchMedia &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches
-              ? "#27272a"
-              : "#fafafa",
+          backgroundColor: navBackground,
         }}
         className="EZDrawer flex flex-col"
       >
