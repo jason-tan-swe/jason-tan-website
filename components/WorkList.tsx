@@ -2,7 +2,6 @@
 
 import { Work } from "@/lib/works";
 import WorkCard from "./WorkCard";
-import { Fade } from "react-awesome-reveal";
 import { Zoom } from "react-awesome-reveal";
 import Section from "./Section";
 
@@ -12,7 +11,7 @@ export default function WorkList({ works }: { works: Work[] }) {
   }
 
   return (
-    <Section className="overflow-hidden w-full max-h-content flex flex-col">
+    <Section type="grow" className="overflow-hidden w-full flex flex-col">
       <Zoom
         triggerOnce
         style={{

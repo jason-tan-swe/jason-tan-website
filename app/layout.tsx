@@ -37,6 +37,26 @@ export default function RootLayout({
       <body
         className={`${robotoMono.variable} dark:bg-zinc-800 bg-neutral-100 text-neutral-700 dark:text-neutral-100 overflow-hidden max-h-screen h-screen`}
       >
+        <head>
+          <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/apple-touch-icon.png"
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            sizes="32x32"
+            href="/favicon-32x32.png"
+          />
+          <link
+            rel="icon"
+            type="image/png"
+            sizes="16x16"
+            href="/favicon-16x16.png"
+          />
+          <link rel="manifest" href="/site.webmanifest" />
+        </head>
         <Navbar />
         {/* <div className="max-h-content overflow-auto items-center flex justify-center p-4"> */}
         {children}

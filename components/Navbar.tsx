@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { sourceCodePro } from "@/app/fonts";
 import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
-import { faX } from "@fortawesome/free-solid-svg-icons/faX";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Drawer from "react-modern-drawer";
 import "react-modern-drawer/dist/index.css";
-import { SocialIcon } from "react-social-icons";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -30,12 +28,21 @@ export default function Navbar() {
             </Link>
           </li>
           <li role="menuitem" className={navItemStyles}>
+            <Link className={drawerItemStyles} href="/blog">
+              Blog
+            </Link>
+          </li>
+          <li role="menuitem" className={navItemStyles}>
             <Link className={linkItemStyles} href="/experience">
               Experience
             </Link>
           </li>
           <li role="menuitem" className={navItemStyles}>
-            <Link className={linkItemStyles} href="/resume">
+            <Link
+              className={linkItemStyles}
+              target="_blank"
+              href="/JasonTan-Resume.pdf"
+            >
               Resume
             </Link>
           </li>
@@ -65,16 +72,35 @@ export default function Navbar() {
         style={{ flex: 1, height: "fit-content" }}
         className="flex flex-col "
       >
-        <Link className={drawerItemStyles} href="/about">
+        <Link
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={drawerItemStyles}
+          href="/about"
+        >
           About
         </Link>
-        <Link className={drawerItemStyles} href="/contact">
-          Contact
+        <Link
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={drawerItemStyles}
+          href="/blog"
+        >
+          Blog
         </Link>
-        <Link className={drawerItemStyles} href="/experience">
+        {/* <Link className={drawerItemStyles} href="/contact">
+          Contact
+        </Link> */}
+        <Link
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className={drawerItemStyles}
+          href="/experience"
+        >
           Experience
         </Link>
-        <Link className={drawerItemStyles} href="/resume">
+        <Link
+          className={drawerItemStyles}
+          target="_blank"
+          href="/JasonTan-Resume.pdf"
+        >
           Resume
         </Link>
       </Drawer>

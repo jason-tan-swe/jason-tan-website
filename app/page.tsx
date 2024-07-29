@@ -8,8 +8,6 @@ import HeroPortrait from "@/components/HeroPortrait";
 import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
 import { buttonStyles } from "@/components/commonStyles";
 import Section from "@/components/Section";
-import InfoCard from "@/components/InfoCard";
-import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 import WorkList from "@/components/WorkList";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
@@ -63,7 +61,7 @@ export default function Home() {
         className="flex flex-col justify-center items-center gap-4"
         type="fullscreen"
       >
-        <Fade cascade direction="up">
+        <Fade triggerOnce cascade direction="up">
           <HeroPortrait />
 
           <div className="flex flex-col justify-center items-center">
@@ -84,7 +82,8 @@ export default function Home() {
             My Portfolio <FontAwesomeIcon icon={faChevronRight} />
           </Link>
           <Link
-            href="/resume"
+            target="_blank"
+            href="/JasonTan-Resume.pdf"
             className={`${buttonStyles} max-w-[350px] self-center border-emerald-500 text-emerald-500`}
           >
             Resume <FontAwesomeIcon icon={faDownload} />
@@ -118,18 +117,21 @@ export default function Home() {
         <h2 className="font-bold text-5xl text-center">
           Want to work together?
         </h2>
-        <Button
+        <Link
+          href="mailto: tjasonkyle@gmail.com"
           className={`${buttonStyles} max-w-[350px] self-center shadow-neon bg-emerald-500 text-white border-emerald-200`}
         >
           Send me a message
           <FontAwesomeIcon icon={faPaperPlane} />
-        </Button>
+        </Link>
       </Section>
       <footer className="px-4 sm:px-24 shadow-inner dark:bg-zinc-800 bg-white flex items-center justify-between py-4">
         <p className="font-bold">Copyright © 2024 Jason Tan</p>
         <ul className="flex gap-x-4 flex-row">
           <li>
             <SocialIcon
+              target="_blank"
+              className="transition-all hover:opacity-60"
               bgColor={"#10b981"}
               style={{
                 borderColor: "#A7F3D0",
@@ -142,6 +144,8 @@ export default function Home() {
           </li>
           <li>
             <SocialIcon
+              target="_blank"
+              className="transition-all hover:opacity-60"
               bgColor={"#10b981"}
               style={{
                 borderColor: "#A7F3D0",

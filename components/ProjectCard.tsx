@@ -1,11 +1,13 @@
 import { Project } from "@/lib/works";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProjectCard({ project }: { project: Project }) {
-  console.log("Jason", project);
   return (
-    <div
-      className={`z-20 flex bg-emerald-500 grow-[2] gap-6 flex-col px-4 pb-2 rounded-xl border-2 border-emerald-200 shadow-neon max-w-[250px] sm:max-w-[350px] sm:max-h-[400px]`}
+    <Link
+      href={project.link}
+      target="_blank"
+      className={`z-20 hover:opacity-60 transition-all flex bg-emerald-500 grow-[2] gap-6 flex-col px-4 pb-2 rounded-xl border-2 border-emerald-200 shadow-neon max-w-[250px] sm:max-w-[350px] sm:max-h-[400px]`}
     >
       <div className="z-10 rounded-xl border self-center w-[250px] h-[200px] sm:w-[350px] sm:h-[300px] relative">
         <Image
@@ -22,6 +24,6 @@ export default function ProjectCard({ project }: { project: Project }) {
         <h2 className="font-bold text-3xl">{project.title}</h2>
         <p className="text-sm">{project.description}</p>
       </div>
-    </div>
+    </Link>
   );
 }
