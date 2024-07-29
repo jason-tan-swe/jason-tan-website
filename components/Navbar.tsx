@@ -57,7 +57,7 @@ export default function Navbar() {
           </li>
         </ul>
       </nav>
-      <nav className="overflow-hidden flex justify-between sticky z-10 w-full top-0 shadow-md bg-neutral-50 left-0 p-4 sm:hidden">
+      <nav className="dark:bg-zinc-800 overflow-hidden flex justify-between sticky z-10 w-full top-0 shadow-md bg-neutral-50 left-0 p-4 sm:hidden">
         <Link href="/" className={`font-bold ${sourceCodePro.className}`}>
           jason.tan
         </Link>
