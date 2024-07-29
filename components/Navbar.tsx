@@ -69,8 +69,16 @@ export default function Navbar() {
         open={isMenuOpen}
         onClose={() => setIsMenuOpen(!isMenuOpen)}
         direction="top"
-        style={{ flex: 1, height: "fit-content" }}
-        className="flex flex-col "
+        style={{
+          flex: 1,
+          height: "fit-content",
+          backgroundColor:
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "#27272a"
+              : "#fafafa",
+        }}
+        className="EZDrawer flex flex-col"
       >
         <Link
           onClick={() => setIsMenuOpen(!isMenuOpen)}
