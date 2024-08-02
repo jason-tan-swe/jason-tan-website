@@ -14,23 +14,28 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Practices
+When working on a ticket there are two practices:
+1. Create a new branch then review + merge
+2. Link the issue in your commit and close the issue
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Resources**
+- [StackOverflow Thread on linking issues in commits](https://stackoverflow.com/questions/1687262/link-to-the-issue-number-on-github-within-a-commit-message)
+- [Github Blog on linking issues in commits](https://github.blog/news-insights/the-library/issues-2-0-the-next-generation/)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Plans
 
-## Learn More
+**Short Term**
+- [ ] Fix footer and header colors to be more visible [#1](https://github.com/jason-tan-swe/jason-tan-website/issues/1)
+- [ ] Add badge attributes to projects for major skills used [#2](https://github.com/jason-tan-swe/jason-tan-website/issues/2)
 
-To learn more about Next.js, take a look at the following resources:
+**Long Term**
+- [ ] Add PayloadCMS for Blogs and ease of copy changes [#3](https://github.com/jason-tan-swe/jason-tan-website/issues/3)
+- [ ] Create frontend for Payload CMS [#4](https://github.com/jason-tan-swe/jason-tan-website/issues/4)
+- [ ] Add projects section using PayloadCMS [#5](https://github.com/jason-tan-swe/jason-tan-website/issues/5)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Hosted on Vercel with Vercel Analytics
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+https://jasontan.co
