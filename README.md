@@ -14,6 +14,17 @@ pnpm dev
 bun dev
 ```
 
+## Plans
+
+**Short Term**
+- [ ] Fix footer and header colors to be more visible #1
+- [ ] Add badge attributes to projects for major skills used #2
+
+**Long Term**
+- [ ] Add PayloadCMS for Blogs and ease of copy changes #3
+- [ ] Create frontend for Payload CMS #4 related to #3
+- [ ] Add projects section using PayloadCMS #5
+
 ## Deployment
 
 Hosted on Vercel with Vercel Analytics
