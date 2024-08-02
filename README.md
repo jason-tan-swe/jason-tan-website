@@ -17,13 +17,13 @@ bun dev
 ## Plans
 
 **Short Term**
-- [ ] Fix footer and header colors to be more visible #1
-- [ ] Add badge attributes to projects for major skills used #2
+- [ ] Fix footer and header colors to be more visible [#1](https://github.com/jason-tan-swe/jason-tan-website/issues/1)
+- [ ] Add badge attributes to projects for major skills used [#2](https://github.com/jason-tan-swe/jason-tan-website/issues/2)
 
 **Long Term**
-- [ ] Add PayloadCMS for Blogs and ease of copy changes #3
-- [ ] Create frontend for Payload CMS #4 related to #3
-- [ ] Add projects section using PayloadCMS #5
+- [ ] Add PayloadCMS for Blogs and ease of copy changes [#3](https://github.com/jason-tan-swe/jason-tan-website/issues/3)
+- [ ] Create frontend for Payload CMS [#4](https://github.com/jason-tan-swe/jason-tan-website/issues/4)
+- [ ] Add projects section using PayloadCMS [#5](https://github.com/jason-tan-swe/jason-tan-website/issues/5)
 
 ## Deployment
 
