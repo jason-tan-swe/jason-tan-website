@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { robotoMono, sourceCodePro } from "./fonts";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/react"
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "Jason Tan - Homepage",
   description:
-    "Jason Tan Software Engineer Homepage Portfolio based in Toronto, Ontario from the University of Guelph",
+    "Jason Tan Software Engineer Portfolio based in Toronto, Ontario from the University of Guelph",
   authors: [{ name: "Jason Tan" }],
   keywords: [
     "Next.js",
@@ -61,6 +62,7 @@ export default function RootLayout({
         {/* <div className="max-h-content overflow-auto items-center flex justify-center p-4"> */}
         {children}
         {/* </div> */}
+        <Analytics />
       </body>
     </html>
   );
