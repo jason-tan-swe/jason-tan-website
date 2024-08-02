@@ -14,6 +14,15 @@ pnpm dev
 bun dev
 ```
 
+## Practices
+When working on a ticket there are two practices:
+1. Create a new branch then review + merge
+2. Link the issue in your commit and close the issue
+
+**Resources**
+- [StackOverflow Thread on linking issues in commits](https://stackoverflow.com/questions/1687262/link-to-the-issue-number-on-github-within-a-commit-message)
+- [Github Blog on linking issues in commits](https://github.blog/news-insights/the-library/issues-2-0-the-next-generation/)
+
 ## Plans
 
 **Short Term**
