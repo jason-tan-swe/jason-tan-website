@@ -1,17 +1,16 @@
+import { HACKATHONS_QUERY } from "@/sanity/lib/queries";
 import { NextResponse } from "next/server";
 import { sanityFetch } from "@/sanity/lib/client";
-import { EXPERIENCES_QUERY } from "@/sanity/lib/queries";
 
-export const dynamic = "force-dynamic";
-
+export const dynamic = "force-dynamic"; // defaults to auto
 export async function GET(request: Request) {
   try {
-    const works = await sanityFetch({ 
-      query: EXPERIENCES_QUERY,
+    const hackathons = await sanityFetch({ 
+      query: HACKATHONS_QUERY,
       params: {},
-      tags: ['experience']
+      tags: ['hackathon']
     });
-    return NextResponse.json({ success: true, data: works });
+    return NextResponse.json({ success: true, data: hackathons });
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Failed to fetch experiences" },
