@@ -1,3 +1,5 @@
+"use client"
+
 import { useWindowSize } from "usehooks-ts";
 
 export function useBreakpoint() {
@@ -9,4 +11,12 @@ export function useBreakpoint() {
   if (width < 1280) return "lg";
   if (width < 1536) return "xl";
   return "2xl"; // Above `1536px`
+}
+
+export function useIsMobile() {
+  const breakpoint = useBreakpoint();
+  if (breakpoint == "sm" || breakpoint == "xs") {
+    return true;
+  }
+  return false;
 }

@@ -91,7 +91,6 @@ export function ExpandableBlogCard({
               animate={{ height: isSmallScreen ? (expanded ? '100vh' : '60vh') : '100%' }}
               transition={{ type: 'spring', stiffness: 100, damping: 20 }}
               onScroll={(e) => {
-                console.log("HELLO")
                 const target = e.currentTarget;
                 const scrollTop = target.scrollTop;
                 const scrollHeight = target.scrollHeight;

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useMemo, useEffect } from 'react';
+import React, { useRef, useState, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { mockProjects, mockBlogPosts, mockHackathons } from '@/lib/mock/visualizationData';
 import { Hackathon, Project, Post } from '@/sanity/sanity.types';
@@ -12,6 +12,7 @@ import { ParticleAura } from './ParticleAura';
 import { NodeDetail } from './NodeDetail'
 import { AnimatedCamera } from './AnimatedCamera';
 import { VisualizationFilter } from './VisualizationFilter';
+import { useIsMobile } from '@/hooks/useBreakpoint';
 
 export interface NodeProps {
   id: string;
@@ -23,11 +24,16 @@ export interface NodeProps {
   isHighlighted?: boolean;
   onClick?: () => void;
   isSelected?: boolean;
+  relatedNodes?: NodeProps[];
 }
 
 interface CameraPosition {
   position: [number, number, number]
   target: [number, number, number]
+}
+
+interface VisualizationProps {
+  onLoad?: () => void;
 }
 
 
@@ -66,7 +72,17 @@ const ParticleRing = ({ radius, color }: { radius: number; color: string }) => {
   );
 };
 
-const Node: React.FC<NodeProps> = ({ id, type, position, data, size = 1, isMajorNode = false, isHighlighted = false, isSelected = false, onClick }) => {
+const Node: React.FC<NodeProps> = ({
+  id,
+  type,
+  position,
+  data,
+  size = 1,
+  isMajorNode = false,
+  isHighlighted = false,
+  isSelected = false,
+  onClick
+}) => {
   const meshRef = useRef<Mesh>(null);
   const [hovered, setHovered] = useState(false);
   const { camera } = useThree();
@@ -216,7 +232,7 @@ const EdgeConnections = ({ nodes, type, isHighlighted, majorNode }: {
   );
 };
 
-const Visualization = () => {
+const Visualization = ({ onLoad }: VisualizationProps) => {
   const [highlightedType, setHighlightedType] = useState<'project' | 'blog' | 'hackathon' | null>(null);
   const [selectedNode, setSelectedNode] = useState<NodeProps | null>(null)
   const [cameraPosition, setCameraPosition] = useState<CameraPosition>({
@@ -225,13 +241,15 @@ const Visualization = () => {
   })
   const clickedNode = useRef(false);
   const isPanning = useRef(false);
+  const isMobile = useIsMobile();
+  const [isReady, setIsReady] = useState(false);
 
-  const handleCanvasClick = () => {
-    if (!clickedNode.current && !isPanning.current) {
-      setHighlightedType(null);
-    }
-    clickedNode.current = false;
-  };
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      setIsReady(true);
+      onLoad?.();
+    })
+  }, [onLoad])
 
   // Update the useSpring configuration in the Visualization component
   const { cameraProps } = useSpring({
@@ -251,6 +269,13 @@ const Visualization = () => {
     },
   })
 
+  const handleCanvasClick = () => {
+    if (!clickedNode.current && !isPanning.current) {
+      setHighlightedType(null);
+    }
+    clickedNode.current = false;
+  };
+
   const handleZoomOut = () => {
     clickedNode.current = true;
     setCameraPosition({
@@ -258,35 +283,33 @@ const Visualization = () => {
       target: [0, 0, 0]
     })
     setSelectedNode(null)
-    console.log("ZOOMED OUT")
   }
 
-  useEffect(() => {
-    console.log('cam = ', cameraPosition)
-  }, [cameraPosition])
+  const handleZoomIn = (node: NodeProps) => {
+    setCameraPosition({
+      position: [
+        node.position[0] + 8, // Move further out
+        node.position[1] + 3, // Less vertical offset
+        node.position[2] + 8  // Move further out
+      ],
+      target: node.position
+    })
+    setSelectedNode(node)
+
+  }
   
   // Update handleNodeClick
   const handleNodeClick = (node: NodeProps) => {
     clickedNode.current = true
     setHighlightedType(highlightedType === node.type ? null : node.type);
     if (selectedNode?.id === node.id) {
-      // Zoom out
       handleZoomOut();
-    } else {
-      // Zoom in
-      console.log("ZOOMING IN", node.position)
-      setCameraPosition({
-        position: [
-          node.position[0] + 8, // Move further out
-          node.position[1] + 3, // Less vertical offset
-          node.position[2] + 8  // Move further out
-        ],
-        target: node.position
-      })
-      setSelectedNode(node)
+      return; 
     }
+
+    // Zoom in
+    handleZoomIn(node);
   }
-  // console.log('cam', cameraProps)
   
   // Create node data
   // Inside the Visualization component, replace the existing nodes useMemo with:
@@ -353,6 +376,7 @@ const Visualization = () => {
       type: 'project' as const,
       position: [-5, 5, 0] as [number, number, number],
       data: { title: 'Projects' },
+      relatedNodes: nodes.projects,
       size: 3,
       isMajorNode: true
     },
@@ -361,6 +385,7 @@ const Visualization = () => {
       type: 'blog' as const,
       position: [5, 5, 0] as [number, number, number],
       data: { title: 'Blogs' },
+      relatedNodes: nodes.blogs,
       size: 3,
       isMajorNode: true
     },
@@ -369,18 +394,21 @@ const Visualization = () => {
       type: 'hackathon' as const,
       position: [0, -5, 0] as [number, number, number],
       data: { title: 'Hackathons' },
+      relatedNodes: nodes.hackathons,
       size: 3,
       isMajorNode: true
     }
   ], []) as NodeProps[];
 
   return (
-    <div className="w-full m-auto h-[360px] sm:h-[500px] md:h-[500px] lg:h-[700px] md:py-2">
+    <div className={`w-full m-auto ${isMobile ? 'h-full' : 'h-[400px]'} sm:h-[500px] md:h-[500px] lg:h-[700px] md:py-2`}>
+      <Suspense fallback={null}>
       <Canvas
         camera={{ fov: 45, near: 0.1, far: 100 }}
         onClick={handleCanvasClick}
         gl={{ antialias: true, alpha: true }}
         dpr={[1,2]}
+        frameloop={isReady ? 'always' : 'never'}
       >
         <AnimatedCamera
           selectedNode={selectedNode}
@@ -465,8 +493,11 @@ const Visualization = () => {
             >
               <group scale={0.15}> {/* Scale down the detail panel */}
                 <NodeDetail
+                  isMajorNode={selectedNode?.isMajorNode}
+                  relatedNodes={selectedNode?.relatedNodes}
                   data={selectedNode.data}
                   onClose={handleZoomOut}
+                  onNodeClick={handleNodeClick}
                 />
               </group>
             </Billboard>
@@ -486,6 +517,7 @@ const Visualization = () => {
         activeType={highlightedType}
         onTypeChange={setHighlightedType}
       />
+      </Suspense>
     </div>
   );
 };

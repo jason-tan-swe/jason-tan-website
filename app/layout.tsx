@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/react"
 import Navbar from "@/components/ui/Navbar";
 import Footer from "@/components/ui/Footer";
+import ClientLayout from "./ClientLayout";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jasontan.co"),
@@ -34,6 +35,8 @@ export const metadata: Metadata = {
   },
 };
 
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,12 +47,9 @@ export default function RootLayout({
       <body
         className={`font-quicksand h-screen w-screen bg-base text-neutral-100 overflow-y-auto`}
       >
-        <Navbar /> 
-        <main className="max-w-7xl mx-auto">
+        <ClientLayout>
           {children}
-        </main>
-        <Footer />
-        <Analytics />
+        </ClientLayout>
       </body>
     </html>
   );

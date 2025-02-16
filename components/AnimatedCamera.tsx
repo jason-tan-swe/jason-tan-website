@@ -1,7 +1,8 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { NodeProps } from './Visualization'
 import { CameraControls, CameraControlsProps } from '@react-three/drei'
 import { Vector3 } from 'three';
+import { useIsMobile } from '@/hooks/useBreakpoint';
 
 interface AnimatedCameraProps extends CameraControlsProps {
   cameraProps: {
@@ -18,13 +19,20 @@ interface AnimatedCameraProps extends CameraControlsProps {
 const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props }) => {
   const controlsRef = useRef<CameraControls>(null)
   const oldNode = useRef<NodeProps | null>(null)
+  const [isEnabled, setIsEnabled] = useState(true);
+  const isActive = useRef<boolean | undefined>(undefined);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleNodeAnimation = async () => {
-      console.log('old', oldNode.current)
       if (!controlsRef.current) return
       if (selectedNode) {
-        controlsRef.current.setLookAt(
+        if (oldNode.current) {
+          setIsEnabled(true)
+        }
+
+        oldNode.current = selectedNode;
+        await controlsRef.current.setLookAt(
           selectedNode.position[0] + 3,
           selectedNode.position[1] + 1.5,
           selectedNode.position[2] + 3,
@@ -33,9 +41,9 @@ const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props 
           selectedNode.position[2],
           true // animate
         )
-        oldNode.current = selectedNode;
+        setIsEnabled(selectedNode?.isMajorNode ? false : true);
       } else if (oldNode.current) {
-        // controlsRef.current.setLookAt(20, 20, 20, 0, 0, 0, true)
+        setIsEnabled(true);
         controlsRef.current.setLookAt(
           oldNode.current.position[0] + 20, // Further away but same direction
           oldNode.current.position[1] + 20,
@@ -45,11 +53,11 @@ const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props 
           oldNode.current.position[2],
           true
         )
-        
-        oldNode.current = null;
         setTimeout(async () => {
           if (controlsRef.current) {
-            await controlsRef.current.setLookAt(20, 20, 20, 0, 0, 0, true)
+            controlsRef.current.setLookAt(20, 20, 20, 0, 0, 0, true)
+            // setIsEnabled(true)
+            oldNode.current = null;
           }
         }, 50)
       }
@@ -58,10 +66,12 @@ const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props 
   }, [selectedNode])
 
   return <CameraControls
-    maxDistance={35}
+    maxDistance={isMobile ? 45 : 35}
     minDistance={8}
-    distance={controlsRef?.current?.distance ?? 35}
+    enabled={isEnabled}
+    distance={controlsRef?.current?.distance ?? isMobile ? 45 : 35}
     ref={controlsRef}
+    active={isActive.current}
     {...props}
    />
 }

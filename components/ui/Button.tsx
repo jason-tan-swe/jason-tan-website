@@ -1,3 +1,5 @@
+"use client"
+
 import { buttonStyles } from "../commonStyles";
 import { forwardRef } from "react";
 
