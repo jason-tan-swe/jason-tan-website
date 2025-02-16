@@ -20,7 +20,10 @@ const config: Config = {
   			],
   			scp: [
   				'var(--font-source-code-pro)'
-  			]
+  			],
+			quicksand: [
+				'var(--font-quicksand)',
+			],
   		},
   		height: {
   			content: 'calc(100% - 9.563rem)',
@@ -38,6 +41,9 @@ const config: Config = {
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
   		},
+		backgroundColor: {
+			base: 'rgba(32, 31, 36, 1)'
+		},
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',

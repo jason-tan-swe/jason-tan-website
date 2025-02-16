@@ -1,14 +1,17 @@
 'use client'
 
+import { usePathname } from "next/navigation"
 import GitHub from "../socials/GitHub"
 import LinkedIn from "../socials/LinkedIn"
 import Twitter from "../socials/Twitter"
 import Mail from "../socials/Mail"
 
-export default function Footer(){
-    if (typeof window === 'undefined' || window.location.pathname.includes("/studio")) {
-        return null
-      }
+export default function Footer(){ 
+  const pathname = usePathname();
+  
+  if (pathname?.includes("/studio")) {
+    return null;
+  }
 
     return (
         <footer className="py-8 border-t border-neutral-800">
