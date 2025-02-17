@@ -115,6 +115,11 @@ export const readingTime = defineField({
   type: 'string',
 })
 
+export const externalLink = defineField({
+  name: 'externalLink',
+  type: 'url'
+})
+
 export const companyInformationField = defineField({
   name: 'companyInformation',
   type: 'object',

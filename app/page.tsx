@@ -122,7 +122,7 @@ import HeroPortrait from '@/components/HeroPortrait';
 
 const Visualization = dynamic(() => import('@/components/Visualization'), { 
   ssr: false,
-  loading: () => <Loading className="h-[calc(100dvh-72px)]" />
+  loading: () => <Loading className="h-[calc(100vh-4rem)]" />
 });
 
 export default function Home() {
@@ -137,9 +137,10 @@ export default function Home() {
 
   if (!mounted) return null;
 
+
   return (
     <>
-      <div className={`${isMobile ? 'h-[calc(100dvh-72px)]' : 'h-full'} w-full relative`}>
+      <div className={`${isMobile ? 'h-[calc(100svh-4rem)]' : 'h-full'} w-full relative`}>
         <AnimatePresence mode="wait">
           {isLoading && (
             <motion.div
@@ -160,7 +161,7 @@ export default function Home() {
       {!isMobile && (
         <section
           aria-label="Jason Tan social links and resume"
-          className="md:mt-2 flex flex-col items-center text-center"
+          className="md:mt-4 flex flex-col items-center text-center"
         >  
           <div className="flex flex-col md:flex-row mt-4 justify-evenly items-center md:items-start w-full px-8">
             <div className="self-start text-start flex flex-col gap-0 sm:gap-2">

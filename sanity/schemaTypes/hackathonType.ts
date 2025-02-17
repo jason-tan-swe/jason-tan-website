@@ -12,6 +12,7 @@ import {
   detailsField,
   teammatesField,
   readingTime,
+  externalLink,
 } from './sharedFields'
 
 export const hackathonType = defineType({
@@ -24,6 +25,7 @@ export const hackathonType = defineType({
     titleField,
     slugField,
     descriptionField,
+    externalLink,
     authorField,
     toolsField,
     teammatesField,

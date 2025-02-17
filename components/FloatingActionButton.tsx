@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { User2, Network } from "lucide-react"
-import { useEffect, useState } from "react"
 
 interface FloatingActionButtonProps {
   isProfileView: boolean;
@@ -13,7 +12,7 @@ export default function FloatingActionButton({ isProfileView, onClick }: Floatin
   return (
     <motion.button
       onClick={onClick}
-      className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-400 rounded-2xl shadow-lg flex items-center justify-center text-black hover:bg-emerald-300 transition-colors z-50"
+      className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-400 rounded-2xl shadow-lg flex items-center justify-center text-black hover:bg-emerald-300 transition-colors z-[999]"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
     >

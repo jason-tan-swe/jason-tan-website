@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { robotoMono, sourceCodePro, quicksand } from "./fonts";
+import { quicksand } from "./fonts";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react"
-import Navbar from "@/components/ui/Navbar";
-import Footer from "@/components/ui/Footer";
-import ClientLayout from "./ClientLayout";
+import ClientLayout from "./App";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jasontan.co"),
@@ -45,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={quicksand.variable}>
       <body
-        className={`font-quicksand h-screen w-screen bg-base text-neutral-100 overflow-y-auto`}
+        className={`font-quicksand h-dvh w-dvw bg-base text-neutral-100`}
       >
         <ClientLayout>
           {children}

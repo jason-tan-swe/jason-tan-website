@@ -3,7 +3,6 @@
 import Image from "next/image";
 import theme from "tailwindcss/defaultTheme";
 import { useMediaQuery } from "usehooks-ts";
-import { rainbowStyles } from "./ui/rainbow-button";
 
 const neonPortraitStyles =
     "rounded-full border-2 border-emerald-200 shadow-neon";

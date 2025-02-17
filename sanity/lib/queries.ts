@@ -6,3 +6,5 @@ export const EXPERIENCE_QUERY = defineQuery(`*[_type == "experience" && slug.cur
 export const PROJECTS_QUERY = defineQuery(`*[_type == "project"] {title, slug, mainImage, description, tools, details, readingTime, startDate, endDate}|order(startDate asc)`)
 
 export const HACKATHONS_QUERY = defineQuery(`*[_type == "hackathon"] {title, slug, mainImage, description, tools, details, readingTime, teammates, startDate, endDate}|order(startDate asc)`)
+
+export const BLOGS_QUERY = defineQuery(`*[_type == "post"] {title, slug, mainImage, description, details, readingTime, publishedAt}|order(publishedAt asc)`)

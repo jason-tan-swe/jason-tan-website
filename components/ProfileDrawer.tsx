@@ -1,9 +1,7 @@
 "use client"
 
-import { motion, useMotionValue, useTransform, AnimatePresence, useSpring } from "framer-motion";
-import Button from "@/components/ui/Button";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { RainbowButton } from "./ui/rainbow-button";
 import { File } from "lucide-react";
 import { buttonStyles } from "./commonStyles";
@@ -36,22 +34,23 @@ export default function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
             transition={{
               type: "spring",
               damping: 30,
-              stiffness: 300,
-              mass: 0.8,
+              stiffness: 400,
+              mass: 0.1,
+              restDelta: 0.5
             }}
-            className="fixed inset-x-0 bottom-0 h-[90vh] bg-neutral-900 rounded-t-3xl z-40 flex flex-col"
+            onDragEnd={handleDragEnd}
+            dragConstraints={{ top: 0 }}
+            dragElastic={0.4}
+            dragSnapToOrigin
+            drag="y"
+            className="fixed inset-x-0 bottom-0 h-[90dvh] bg-base rounded-t-3xl flex flex-col z-50"
           >
             {/** Drag Handle */}
-            <motion.div
-              className="absolute inset-x-0 top-[-1px] h-12 cursor-grab active:cursor-grabbing bg-neutral-900 rounded-t-3xl z-10"
-              drag="y"
-              dragConstraints={{ top: 0 }}
-              dragElastic={0.4}
-              dragSnapToOrigin
-              onDragEnd={handleDragEnd}
+            <div
+              className="absolute inset-x-0 top-[-2px] h-12 cursor-grab active:cursor-grabbing bg-base/80 rounded-t-3xl z-10"
             >
               <div className="w-12 h-1.5 bg-neutral-700 rounded-full mx-auto mt-4" />
-            </motion.div>
+            </div>
 
             {/* Content */}
             <motion.div 
@@ -60,7 +59,7 @@ export default function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >              
-              <div className="p-6 mt-8 max-w-md mx-auto space-y-8">
+              <div className="p-6 mt-12 max-w-md mx-auto space-y-8">
                 <div className="flex flex-col items-center gap-6">
                   <HeroPortrait />
                   <div className="text-center">

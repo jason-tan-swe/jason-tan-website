@@ -2,7 +2,6 @@
 
 import React, { useRef, useState, useMemo, useEffect, Suspense } from 'react';
 import { Canvas, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
-import { mockProjects, mockBlogPosts, mockHackathons } from '@/lib/mock/visualizationData';
 import { Hackathon, Project, Post } from '@/sanity/sanity.types';
 import { Mesh, Group, DoubleSide } from 'three';
 import { Text3D, Line, Billboard, Sparkles, Center, } from '@react-three/drei';
@@ -13,7 +12,9 @@ import { NodeDetail } from './NodeDetail'
 import { AnimatedCamera } from './AnimatedCamera';
 import { VisualizationFilter } from './VisualizationFilter';
 import { useIsMobile } from '@/hooks/useBreakpoint';
-
+import { motion } from "framer-motion"
+import { projectOptions, hackathonOptions, blogOptions } from '@/lib/services/sanity.service';
+import { useQuery } from '@tanstack/react-query';
 export interface NodeProps {
   id: string;
   type: 'project' | 'blog' | 'hackathon';
@@ -25,6 +26,7 @@ export interface NodeProps {
   onClick?: () => void;
   isSelected?: boolean;
   relatedNodes?: NodeProps[];
+  disabled?: boolean;
 }
 
 interface CameraPosition {
@@ -81,6 +83,7 @@ const Node: React.FC<NodeProps> = ({
   isMajorNode = false,
   isHighlighted = false,
   isSelected = false,
+  disabled = false,
   onClick
 }) => {
   const meshRef = useRef<Mesh>(null);
@@ -109,9 +112,19 @@ const Node: React.FC<NodeProps> = ({
   const activeOpacity = isMajorNode ? 0.8 : 0.3;
 
   const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    if (disabled) {
+      e.stopPropagation();
+      return;
+    }
     e.stopPropagation();
     if (onClick) {
       onClick();
+    }
+  };
+
+  const handlePointerOver = () => {
+    if (!disabled) {
+      setHovered(true);
     }
   };
 
@@ -120,8 +133,9 @@ const Node: React.FC<NodeProps> = ({
       <mesh
         ref={meshRef}
         onClick={handleClick}
-        onPointerOver={() => setHovered(true)}
+        onPointerOver={handlePointerOver}
         onPointerOut={() => setHovered(false)}
+        visible={!disabled || isSelected}
       >
         <sphereGeometry args={[size, 32, 32]} />
         <meshBasicMaterial
@@ -243,13 +257,23 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
   const isPanning = useRef(false);
   const isMobile = useIsMobile();
   const [isReady, setIsReady] = useState(false);
+  const [isCreated, setIsCreated] = useState(false);
+
+  // TODO: optimize for speed (is it caching?)
+  const { data: projects, isLoading: projectsLoading, error: projectError } = useQuery(projectOptions)
+  const { data: hackathons, isLoading: hackathonsLoading, error: hackError } = useQuery(hackathonOptions)
+  const { data: blogs, isLoading: blogsLoading, error: blogError } = useQuery(blogOptions)
 
   useEffect(() => {
+    // Ready once all data is collected
+    if (projectsLoading || hackathonsLoading || blogsLoading) return;
+
     requestAnimationFrame(() => {
       setIsReady(true);
       onLoad?.();
     })
-  }, [onLoad])
+  }, [onLoad, projectsLoading, hackathonsLoading, blogsLoading])
+
 
   // Update the useSpring configuration in the Visualization component
   const { cameraProps } = useSpring({
@@ -268,6 +292,103 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
       precision: 0.001
     },
   })
+
+  // Create node data
+  // Inside the Visualization component, replace the existing nodes useMemo with:
+  const nodes = useMemo(() => {
+    const getRandomPosition = (index: number, total: number, offset: number = 0): [number, number, number] => {
+      const radius = 12;
+      // Use golden ratio for better distribution
+      const goldenRatio = (1 + Math.sqrt(5)) / 2;
+      
+      // Add randomness while maintaining good distribution
+      const i = index + offset;
+      const theta = 2 * Math.PI * i / goldenRatio;
+      const phi = Math.acos(1 - 2 * (i + 0.5) / total);
+      
+      // Add small random offset to prevent exact overlaps
+      const jitter = 1.5;
+      const randomOffset = [
+        (Math.random() - 0.5) * jitter,
+        (Math.random() - 0.5) * jitter,
+        (Math.random() - 0.5) * jitter
+      ];
+  
+      return [
+        radius * Math.sin(phi) * Math.cos(theta) + randomOffset[0],
+        radius * Math.sin(phi) * Math.sin(theta) + randomOffset[1],
+        radius * Math.cos(phi) + randomOffset[2]
+      ];
+    };
+  
+    const totalNodes = projects.length + blogs.length + hackathons.length;
+  
+    const projectNodes = projects.map((project, i) => ({
+      id: `project-${i}`,
+      type: 'project' as const,
+      position: getRandomPosition(i, totalNodes, 0),
+      data: project
+    }));
+  
+    const blogNodes = blogs.map((post, i) => ({
+      id: `blog-${i}`,
+      type: 'blog' as const,
+      position: getRandomPosition(i, totalNodes, projects.length + hackathons.length),
+      data: post
+    }));
+  
+    const hackathonNodes = hackathons.map((hackathon, i) => ({
+      id: `hackathon-${i}`,
+      type: 'hackathon' as const,
+      position: getRandomPosition(i, totalNodes, projects.length + blogs.length),
+      data: hackathon
+    }));
+  
+    return {
+      projects: projectNodes,
+      blogs: blogNodes,
+      hackathons: hackathonNodes
+    };
+  }, [blogs, hackathons, projects]);
+
+  // Update the majorNodes positions to be more spread out
+  const majorNodes = useMemo(() => [
+    {
+      id: 'major-projects',
+      type: 'project' as const,
+      position: [-5, 5, 0] as [number, number, number],
+      data: { title: 'Projects' },
+      relatedNodes: nodes.projects,
+      size: 3,
+      isMajorNode: true
+    },
+    {
+      id: 'major-blogs',
+      type: 'blog' as const,
+      position: [5, 5, 0] as [number, number, number],
+      data: { title: 'Blogs' },
+      relatedNodes: nodes.blogs,
+      size: 3,
+      isMajorNode: true
+    },
+    {
+      id: 'major-hackathons',
+      type: 'hackathon' as const,
+      position: [0, -5, 0] as [number, number, number],
+      data: { title: 'Hackathons' },
+      relatedNodes: nodes.hackathons,
+      size: 3,
+      isMajorNode: true
+    }
+  ], [nodes]) as NodeProps[];
+
+  // TODO: Check if error occurred in any one of them, if so, toast
+  // Error can be grabbed via error.message
+  if (projectError || hackError || blogError) {
+    return <>
+      Hello! Beep boop it&apos;s broken :)
+    </>
+  }
 
   const handleCanvasClick = () => {
     if (!clickedNode.current && !isPanning.current) {
@@ -310,102 +431,25 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
     // Zoom in
     handleZoomIn(node);
   }
-  
-  // Create node data
-  // Inside the Visualization component, replace the existing nodes useMemo with:
-  const nodes = useMemo(() => {
-    const getRandomPosition = (index: number, total: number, offset: number = 0): [number, number, number] => {
-      const radius = 12;
-      // Use golden ratio for better distribution
-      const goldenRatio = (1 + Math.sqrt(5)) / 2;
-      
-      // Add randomness while maintaining good distribution
-      const i = index + offset;
-      const theta = 2 * Math.PI * i / goldenRatio;
-      const phi = Math.acos(1 - 2 * (i + 0.5) / total);
-      
-      // Add small random offset to prevent exact overlaps
-      const jitter = 1.5;
-      const randomOffset = [
-        (Math.random() - 0.5) * jitter,
-        (Math.random() - 0.5) * jitter,
-        (Math.random() - 0.5) * jitter
-      ];
-  
-      return [
-        radius * Math.sin(phi) * Math.cos(theta) + randomOffset[0],
-        radius * Math.sin(phi) * Math.sin(theta) + randomOffset[1],
-        radius * Math.cos(phi) + randomOffset[2]
-      ];
-    };
-  
-    const totalNodes = mockProjects.length + mockBlogPosts.length + mockHackathons.length;
-  
-    const projectNodes = mockProjects.map((project, i) => ({
-      id: `project-${i}`,
-      type: 'project' as const,
-      position: getRandomPosition(i, totalNodes, 0),
-      data: project
-    }));
-  
-    const blogNodes = mockBlogPosts.map((post, i) => ({
-      id: `blog-${i}`,
-      type: 'blog' as const,
-      position: getRandomPosition(i, totalNodes, mockProjects.length),
-      data: post
-    }));
-  
-    const hackathonNodes = mockHackathons.map((hackathon, i) => ({
-      id: `hackathon-${i}`,
-      type: 'hackathon' as const,
-      position: getRandomPosition(i, totalNodes, mockProjects.length + mockBlogPosts.length),
-      data: hackathon
-    }));
-  
-    return {
-      projects: projectNodes,
-      blogs: blogNodes,
-      hackathons: hackathonNodes
-    };
-  }, []);
-
-  // Update the majorNodes positions to be more spread out
-  const majorNodes = useMemo(() => [
-    {
-      id: 'major-projects',
-      type: 'project' as const,
-      position: [-5, 5, 0] as [number, number, number],
-      data: { title: 'Projects' },
-      relatedNodes: nodes.projects,
-      size: 3,
-      isMajorNode: true
-    },
-    {
-      id: 'major-blogs',
-      type: 'blog' as const,
-      position: [5, 5, 0] as [number, number, number],
-      data: { title: 'Blogs' },
-      relatedNodes: nodes.blogs,
-      size: 3,
-      isMajorNode: true
-    },
-    {
-      id: 'major-hackathons',
-      type: 'hackathon' as const,
-      position: [0, -5, 0] as [number, number, number],
-      data: { title: 'Hackathons' },
-      relatedNodes: nodes.hackathons,
-      size: 3,
-      isMajorNode: true
-    }
-  ], []) as NodeProps[];
 
   return (
-    <div className={`w-full m-auto ${isMobile ? 'h-full' : 'h-[400px]'} sm:h-[500px] md:h-[500px] lg:h-[700px] md:py-2`}>
-      <Suspense fallback={null}>
+    <Suspense fallback={null}>
+       {isReady && 
+       <motion.div
+          className={`w-full ${isMobile ? 'h-full' : 'h-[400px]'} md:h-[500px] lg:h-[700px] md:py-2`}
+          initial={{ opacity: 0, scale: 1 }}
+          animate={isCreated ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+          transition={{
+            duration: 0.8,
+            ease: [0.4, 0, 0.2, 1],
+          }}
+        >
       <Canvas
         camera={{ fov: 45, near: 0.1, far: 100 }}
         onClick={handleCanvasClick}
+        onCreated={() => {
+          setIsCreated(true)
+        }}
         gl={{ antialias: true, alpha: true }}
         dpr={[1,2]}
         frameloop={isReady ? 'always' : 'never'}
@@ -461,6 +505,7 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
                 {...node}
                 isHighlighted={highlightedType === node.type} // Changed from 'type' to 'node.type'
                 onClick={() => handleNodeClick(node)}
+                disabled={!!selectedNode && selectedNode.id !== node.id}
               />
           ))
         )}
@@ -472,6 +517,7 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
             {...node}
             isHighlighted={highlightedType === node.type}
             onClick={() => handleNodeClick(node)}
+            disabled={!!selectedNode && selectedNode.id !== node.id}
           />
         ))}
         {selectedNode && (
@@ -513,12 +559,13 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
           />
         </EffectComposer>
       </Canvas>
-      <VisualizationFilter
-        activeType={highlightedType}
-        onTypeChange={setHighlightedType}
-      />
+        <VisualizationFilter
+          activeType={highlightedType}
+          onTypeChange={setHighlightedType}
+        />
+    </motion.div>
+}
       </Suspense>
-    </div>
   );
 };
 

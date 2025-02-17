@@ -18,7 +18,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-10 bg-base/30 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <Link href="/" className={`${sourceCodePro.className} text-xl font-bold hover:text-green-500 transition-colors`}>
+        <Link href="/" className={`${sourceCodePro.className} select-none text-xl font-bold hover:text-green-500 transition-colors`}>
           jason.tan
         </Link>
 

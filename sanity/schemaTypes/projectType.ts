@@ -10,6 +10,7 @@ import {
   dateFields,
   detailsField,
   readingTime,
+  externalLink,
 } from './sharedFields'
 
 export const projectType = defineType({
@@ -22,6 +23,7 @@ export const projectType = defineType({
     titleField,
     slugField,
     descriptionField,
+    externalLink,
     authorField,
     toolsField,
     ...dateFields,

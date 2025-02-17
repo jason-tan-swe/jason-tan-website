@@ -11,6 +11,7 @@ import {
   publishedAtField,
   detailsField,
   readingTime,
+  externalLink,
 } from './sharedFields'
 
 export const postType = defineType({
@@ -21,6 +22,7 @@ export const postType = defineType({
   fields: [
     titleField,
     descriptionField,
+    externalLink,
     slugField,
     authorField,
     mainImageField,

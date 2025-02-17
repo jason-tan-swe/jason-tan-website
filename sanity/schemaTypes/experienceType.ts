@@ -12,6 +12,7 @@ import {
   descriptionField,
   dateFields,
   readingTime,
+  externalLink,
 } from './sharedFields'
 
 export const experienceType = defineType({
@@ -82,6 +83,7 @@ export const experienceType = defineType({
     titleField,
     descriptionField,
     authorField,
+    externalLink,
     toolsField,
     ...dateFields,
     readingTime,
