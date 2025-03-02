@@ -27,13 +27,7 @@ export default function Footer(){
   return (
       <footer className="py-8 border-t border-neutral-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <p className="text-neutral-400">{`© ${new Date().getFullYear().toString()} Jason Tan`}</p>
-          <div className="flex space-x-4">
-              <GitHub />
-              <LinkedIn />
-              <Twitter />
-              <Mail />
-          </div>
+          <p className="text-neutral-400">{`© ${new Date().getFullYear().toString()} Jason Tan. All rights reserved.`}</p>
           </div>
       </footer>
   )

@@ -10,7 +10,7 @@ export default function Loading({ className }: { className?: string }) {
   return (
     <AnimatePresence>
       <motion.div 
-        className={`${className} flex flex-col items-center justify-center bg-neutral-900`}
+        className={`${className} flex flex-col items-center justify-center bg-neutral-900 rounded-lg`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

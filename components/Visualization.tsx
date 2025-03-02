@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useMemo, useEffect, Suspense } from 'react';
+import React, { useRef, useState, useMemo, useEffect, Suspense, MouseEventHandler } from 'react';
 import { Canvas, ThreeEvent, useFrame, useThree } from '@react-three/fiber';
 import { Hackathon, Project, Post } from '@/sanity/sanity.types';
 import { Mesh, Group, DoubleSide } from 'three';
@@ -8,18 +8,25 @@ import { Text3D, Line, Billboard, Sparkles, Center, } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import { useSpring,} from '@react-spring/three'
 import { ParticleAura } from './ParticleAura';
-import { NodeDetail } from './NodeDetail'
+import { NodeDetail } from './NodeDetail/index'
 import { AnimatedCamera } from './AnimatedCamera';
 import { VisualizationFilter } from './VisualizationFilter';
 import { useIsMobile } from '@/hooks/useBreakpoint';
 import { motion } from "framer-motion"
 import { projectOptions, hackathonOptions, blogOptions } from '@/lib/services/sanity.service';
 import { useQuery } from '@tanstack/react-query';
+import { RotateCw } from 'lucide-react';
+import { ContentBlock } from './NodeDetail/ContentRenderer';
+
 export interface NodeProps {
   id: string;
   type: 'project' | 'blog' | 'hackathon';
   position: [number, number, number];
-  data: Project | Post | Hackathon;
+  data: {
+    title?: string;
+    details?: any; // Temporarily widen the type
+    [key: string]: any;
+  };
   size?: number;
   isMajorNode?: boolean;
   isHighlighted?: boolean;
@@ -135,13 +142,12 @@ const Node: React.FC<NodeProps> = ({
         onClick={handleClick}
         onPointerOver={handlePointerOver}
         onPointerOut={() => setHovered(false)}
-        visible={!disabled || isSelected}
       >
         <sphereGeometry args={[size, 32, 32]} />
         <meshBasicMaterial
           color={color}
           transparent
-          opacity={isHighlighted ? activeOpacity : baseOpacity}
+          opacity={isHighlighted ? activeOpacity : (disabled ? baseOpacity * 0.5 : baseOpacity)}
           wireframe={true}
         />
       </mesh>
@@ -274,7 +280,6 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
     })
   }, [onLoad, projectsLoading, hackathonsLoading, blogsLoading])
 
-
   // Update the useSpring configuration in the Visualization component
   const { cameraProps } = useSpring({
     cameraProps: {
@@ -328,21 +333,21 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
       type: 'project' as const,
       position: getRandomPosition(i, totalNodes, 0),
       data: project
-    }));
+    } as NodeProps));
   
     const blogNodes = blogs.map((post, i) => ({
       id: `blog-${i}`,
       type: 'blog' as const,
       position: getRandomPosition(i, totalNodes, projects.length + hackathons.length),
       data: post
-    }));
+    } as NodeProps));
   
     const hackathonNodes = hackathons.map((hackathon, i) => ({
       id: `hackathon-${i}`,
       type: 'hackathon' as const,
       position: getRandomPosition(i, totalNodes, projects.length + blogs.length),
       data: hackathon
-    }));
+    } as NodeProps));
   
     return {
       projects: projectNodes,
@@ -390,7 +395,12 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
     </>
   }
 
-  const handleCanvasClick = () => {
+  const handleCanvasClick = (event: ThreeEvent<MouseEvent>) => {
+    // Only reset if clicking directly on the canvas background
+    if (event.object instanceof Mesh) {
+      return; // Don't reset if clicking on a 3D object
+    }
+    
     if (!clickedNode.current && !isPanning.current) {
       setHighlightedType(null);
     }
@@ -398,6 +408,7 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
   };
 
   const handleZoomOut = () => {
+    document.body.style.overflow = 'auto';
     clickedNode.current = true;
     setCameraPosition({
       position: [30, 30, 30],
@@ -407,6 +418,7 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
   }
 
   const handleZoomIn = (node: NodeProps) => {
+    document.body.style.overflow = 'hidden';
     setCameraPosition({
       position: [
         node.position[0] + 8, // Move further out
@@ -415,8 +427,8 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
       ],
       target: node.position
     })
+    console.log('selected node', node)
     setSelectedNode(node)
-
   }
   
   // Update handleNodeClick
@@ -432,11 +444,46 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
     handleZoomIn(node);
   }
 
+  const handleReset = () => {
+    // Reset all state
+    setSelectedNode(null);
+    setHighlightedType(null);
+    setCameraPosition({
+      position: [30, 30, 30],
+      target: [0, 0, 0]
+    });
+    // Force a re-render of the canvas
+    setIsCreated(false);
+    setTimeout(() => setIsCreated(true), 500);
+  };
+
   return (
     <Suspense fallback={null}>
-       {isReady && 
-       <motion.div
-          className={`w-full ${isMobile ? 'h-full' : 'h-[400px]'} md:h-[500px] lg:h-[700px] md:py-2`}
+      {isReady && 
+        <motion.div
+          className={`
+            rounded-2xl 
+            mx-auto 
+            w-full 
+            max-w-[1000px] 
+            ${isMobile ? 'h-full' : 'h-[400px]'} 
+            md:h-[500px] 
+            lg:h-[700px] 
+            md:py-2 
+            relative
+            bg-black/20
+            backdrop-blur-[1px]
+            border border-[#00ff8810]
+            shadow-[0_0_15px_rgba(0,0,0,0.05),_0_0_80px_rgba(0,0,0,0.02),_inset_0_0_20px_rgba(0,255,136,0.02)]
+            dark:shadow-[0_0_15px_rgba(0,0,0,0.1),_0_0_80px_rgba(0,255,136,0.01),_inset_0_0_20px_rgba(0,255,136,0.02)]
+            after:absolute
+            after:inset-0
+            after:rounded-2xl
+            after:bg-gradient-to-b
+            after:from-[#00ff8805]
+            after:to-transparent
+            after:pointer-events-none
+          `}
           initial={{ opacity: 0, scale: 1 }}
           animate={isCreated ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
           transition={{
@@ -444,128 +491,141 @@ const Visualization = ({ onLoad }: VisualizationProps) => {
             ease: [0.4, 0, 0.2, 1],
           }}
         >
-      <Canvas
-        camera={{ fov: 45, near: 0.1, far: 100 }}
-        onClick={handleCanvasClick}
-        onCreated={() => {
-          setIsCreated(true)
-        }}
-        gl={{ antialias: true, alpha: true }}
-        dpr={[1,2]}
-        frameloop={isReady ? 'always' : 'never'}
-      >
-        <AnimatedCamera
-          selectedNode={selectedNode}
-          cameraProps={cameraProps}
-          onStart={() => {
-            isPanning.current = true;
-          }}
-          onEnd={() => {
-            setTimeout(() => {
-              isPanning.current = false;
-            }, 10);
-          }}
-        />
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        <Sparkles
-          count={200}
-          size={0.4}
-          speed={0.2}
-          opacity={0.15}
-          scale={15}
-          noise={0.1}
-          color={0x444444}
-        />
-        {/* Render edges */}
-        <EdgeConnections 
-          nodes={nodes.projects}
-          type="project"
-          isHighlighted={highlightedType === 'project'}
-          majorNode={majorNodes[0]}
-        /> 
-        <EdgeConnections 
-          nodes={nodes.blogs}
-          type="blog"
-          isHighlighted={highlightedType === 'blog'}
-          majorNode={majorNodes[1]}
-        />
-        <EdgeConnections 
-          nodes={nodes.hackathons}
-          type="hackathon"
-          isHighlighted={highlightedType === 'hackathon'}
-          majorNode={majorNodes[2]}
-        />
+          <Canvas
+            camera={{ fov: 45, near: 0.1, far: 100 }}
+            onClick={handleCanvasClick as unknown as MouseEventHandler<HTMLDivElement>}
+            onCreated={() => {
+              setIsCreated(true)
+            }}
+            gl={{ antialias: true, alpha: true }}
+            dpr={[1,2]}
+            frameloop={isReady ? 'always' : 'never'}
+          >
+            <AnimatedCamera
+              selectedNode={selectedNode}
+              cameraProps={cameraProps}
+              onStart={() => {
+                isPanning.current = true;
+              }}
+              onEnd={() => {
+                setTimeout(() => {
+                  isPanning.current = false;
+                }, 10);
+              }}
+            />
+            <ambientLight intensity={0.5} />
+            <pointLight position={[10, 10, 10]} />
+            <Sparkles
+              count={200}
+              size={0.4}
+              speed={0.2}
+              opacity={0.15}
+              scale={15}
+              noise={0.1}
+              color={0x444444}
+            />
+            {/* Render edges */}
+            <EdgeConnections 
+              nodes={nodes.projects}
+              type="project"
+              isHighlighted={highlightedType === 'project'}
+              majorNode={majorNodes[0]}
+            /> 
+            <EdgeConnections 
+              nodes={nodes.blogs}
+              type="blog"
+              isHighlighted={highlightedType === 'blog'}
+              majorNode={majorNodes[1]}
+            />
+            <EdgeConnections 
+              nodes={nodes.hackathons}
+              type="hackathon"
+              isHighlighted={highlightedType === 'hackathon'}
+              majorNode={majorNodes[2]}
+            />
 
-        {/* Render all nodes */}
-        {Object.entries(nodes).map(([groupType, nodeList]) =>
-          nodeList.map(node => (
+            {/* Render all nodes */}
+            {Object.entries(nodes).map(([groupType, nodeList]) =>
+              nodeList.map(node => (
+                  <Node
+                    key={node.id}
+                    {...node}
+                    isHighlighted={highlightedType === node.type}
+                    onClick={() => handleNodeClick(node)}
+                  />
+              ))
+            )}
+
+            {/* Render major category nodes */}
+            {majorNodes.map(node => (
               <Node
                 key={node.id}
                 {...node}
-                isHighlighted={highlightedType === node.type} // Changed from 'type' to 'node.type'
+                isHighlighted={highlightedType === node.type}
                 onClick={() => handleNodeClick(node)}
-                disabled={!!selectedNode && selectedNode.id !== node.id}
               />
-          ))
-        )}
-
-        {/* Render major category nodes */}
-        {majorNodes.map(node => (
-          <Node
-            key={node.id}
-            {...node}
-            isHighlighted={highlightedType === node.type}
-            onClick={() => handleNodeClick(node)}
-            disabled={!!selectedNode && selectedNode.id !== node.id}
-          />
-        ))}
-        {selectedNode && (
-          <group position={selectedNode.position}>
-            <mesh>
-              <sphereGeometry args={[1.2, 32, 32]} /> {/* Slightly larger than the node */}
-              <meshBasicMaterial 
-                color={selectedNode.type === 'project' ? '#00cc66' : 
-                      selectedNode.type === 'blog' ? '#ff0088' : '#0088ff'}
-                transparent
-                opacity={0.1}
-              />
-            </mesh>
-            <Billboard
-              follow={true}
-              lockX={false}
-              lockY={false}
-              lockZ={false}
-            >
-              <group scale={0.15}> {/* Scale down the detail panel */}
-                <NodeDetail
-                  isMajorNode={selectedNode?.isMajorNode}
-                  relatedNodes={selectedNode?.relatedNodes}
-                  data={selectedNode.data}
-                  onClose={handleZoomOut}
-                  onNodeClick={handleNodeClick}
-                />
+            ))}
+            {selectedNode && (
+              <group position={selectedNode.position}>
+                <mesh>
+                  <sphereGeometry args={[1.2, 32, 32]} /> {/* Slightly larger than the node */}
+                  <meshBasicMaterial 
+                    color={selectedNode.type === 'project' ? '#00cc66' : 
+                          selectedNode.type === 'blog' ? '#ff0088' : '#0088ff'}
+                    transparent
+                    opacity={0.1}
+                  />
+                </mesh>
+                <Billboard
+                  follow={true}
+                  lockX={false}
+                  lockY={false}
+                  lockZ={false}
+                >
+                  <group scale={0.15}> {/* Scale down the detail panel */}
+                    <NodeDetail
+                      isMajorNode={selectedNode?.isMajorNode}
+                      relatedNodes={selectedNode?.relatedNodes}
+                      data={selectedNode.data}
+                      onClose={handleZoomOut}
+                      onNodeClick={handleNodeClick}
+                    />
+                  </group>
+                </Billboard>
               </group>
-            </Billboard>
-          </group>
-        )}
+            )}
 
-        <EffectComposer>
-          <Bloom
-            luminanceThreshold={0.2}
-            luminanceSmoothing={0.9}
-            height={300}
-            intensity={2}
-          />
-        </EffectComposer>
-      </Canvas>
-        <VisualizationFilter
-          activeType={highlightedType}
-          onTypeChange={setHighlightedType}
-        />
-    </motion.div>
-}
-      </Suspense>
+            <EffectComposer>
+              <Bloom
+                luminanceThreshold={0.2}
+                luminanceSmoothing={0.9}
+                height={300}
+                intensity={2}
+              />
+            </EffectComposer>
+          </Canvas>
+
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-4">
+            <VisualizationFilter
+              activeType={highlightedType}
+              onTypeChange={setHighlightedType}
+            />
+            <button
+              onClick={handleReset}
+              className="p-2.5 rounded-xl bg-[#2a2a30]/30 hover:bg-[#2a2a30]/50 
+                text-white backdrop-blur-sm transition-all duration-200
+                border border-white/[0.02] hover:border-[#00ff88]/10
+                shadow-[0_2px_4px_rgba(0,0,0,0.1),inset_0_0_0_rgba(0,255,136,0)]
+                hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),inset_0_0_8px_rgba(0,255,136,0.1)]
+                group"
+              title="Reset View"
+            >
+              <RotateCw className="w-5 h-5 text-gray-400/90 group-hover:text-[#00ff88]/90 transition-colors" />
+            </button>
+          </div>
+        </motion.div>
+      }
+    </Suspense>
   );
 };
 

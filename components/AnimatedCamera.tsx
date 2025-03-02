@@ -28,7 +28,7 @@ const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props 
       if (!controlsRef.current) return
       if (selectedNode) {
         if (oldNode.current) {
-          setIsEnabled(true)
+          // setIsEnabled(true)
         }
 
         oldNode.current = selectedNode;
@@ -41,9 +41,9 @@ const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props 
           selectedNode.position[2],
           true // animate
         )
-        setIsEnabled(selectedNode?.isMajorNode ? false : true);
+        // setIsEnabled(selectedNode?.isMajorNode ? false : true);
       } else if (oldNode.current) {
-        setIsEnabled(true);
+        // setIsEnabled(true);
         controlsRef.current.setLookAt(
           oldNode.current.position[0] + 20, // Further away but same direction
           oldNode.current.position[1] + 20,
@@ -59,7 +59,7 @@ const AnimatedCamera: React.FC<AnimatedCameraProps> = ({ selectedNode, ...props 
             // setIsEnabled(true)
             oldNode.current = null;
           }
-        }, 50)
+        }, 1)
       }
     }
     handleNodeAnimation()

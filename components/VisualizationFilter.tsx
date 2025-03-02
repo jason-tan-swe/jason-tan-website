@@ -44,27 +44,64 @@ const FilterButton: React.FC<FilterButtonProps> = ({ type, isActive, onClick }) 
   );
 };
 
-export const VisualizationFilter: React.FC<{
+interface VisualizationFilterProps {
   activeType: 'project' | 'blog' | 'hackathon' | null;
   onTypeChange: (type: 'project' | 'blog' | 'hackathon' | null) => void;
-}> = ({ activeType, onTypeChange }) => {
+}
+
+export const VisualizationFilter = ({ 
+  activeType,
+  onTypeChange 
+}: VisualizationFilterProps) => {
   return (
-    <div className="hidden md:flex bottom-4 items-center justify-center gap-2">
-      <FilterButton 
-        type="project"
-        isActive={activeType === 'project'}
+    <div className="flex gap-2">
+      <button
         onClick={() => onTypeChange(activeType === 'project' ? null : 'project')}
-      />
-      <FilterButton 
-        type="blog"
-        isActive={activeType === 'blog'}
+        className={`
+          px-4 py-2 rounded-xl backdrop-blur-sm transition-all duration-200
+          border border-white/[0.02] 
+          shadow-[0_2px_4px_rgba(0,0,0,0.1)]
+          hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),inset_0_0_8px_rgba(0,255,136,0.1)]
+          ${activeType === 'project' 
+            ? 'bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/20' 
+            : 'bg-[#2a2a30]/30 text-gray-400/90 hover:bg-[#2a2a30]/50 hover:border-[#00ff88]/10'
+          }
+        `}
+      >
+        Projects
+      </button>
+
+      <button
         onClick={() => onTypeChange(activeType === 'blog' ? null : 'blog')}
-      />
-      <FilterButton 
-        type="hackathon"
-        isActive={activeType === 'hackathon'}
+        className={`
+          px-4 py-2 rounded-xl backdrop-blur-sm transition-all duration-200
+          border border-white/[0.02]
+          shadow-[0_2px_4px_rgba(0,0,0,0.1)]
+          hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),inset_0_0_8px_rgba(255,0,136,0.1)]
+          ${activeType === 'blog'
+            ? 'bg-[#ff0088]/10 text-[#ff0088] border-[#ff0088]/20'
+            : 'bg-[#2a2a30]/30 text-gray-400/90 hover:bg-[#2a2a30]/50 hover:border-[#ff0088]/10'
+          }
+        `}
+      >
+        Blogs
+      </button>
+
+      <button
         onClick={() => onTypeChange(activeType === 'hackathon' ? null : 'hackathon')}
-      />
+        className={`
+          px-4 py-2 rounded-xl backdrop-blur-sm transition-all duration-200
+          border border-white/[0.02]
+          shadow-[0_2px_4px_rgba(0,0,0,0.1)]
+          hover:shadow-[0_4px_8px_rgba(0,0,0,0.15),inset_0_0_8px_rgba(0,136,255,0.1)]
+          ${activeType === 'hackathon'
+            ? 'bg-[#0088ff]/10 text-[#0088ff] border-[#0088ff]/20'
+            : 'bg-[#2a2a30]/30 text-gray-400/90 hover:bg-[#2a2a30]/50 hover:border-[#0088ff]/10'
+          }
+        `}
+      >
+        Hackathons
+      </button>
     </div>
   );
 };

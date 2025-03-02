@@ -29,6 +29,33 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // Handle quests subdomain
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'quests.localhost:3000',
+            },
+          ],
+          destination: '/quests/:path*',
+        },
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
+              value: 'quests.:domain*',
+            },
+          ],
+          destination: '/quests/:path*',
+        },
+      ],
+    }
+  },
 };
 
 export default nextConfig;

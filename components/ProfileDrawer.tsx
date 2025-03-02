@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { RainbowButton } from "./ui/rainbow-button";
+import Button from "./ui/Button";
 import { File } from "lucide-react";
 import { buttonStyles } from "./commonStyles";
 import HeroPortrait from "./HeroPortrait";
@@ -70,12 +70,13 @@ export default function ProfileDrawer({ isOpen, onClose }: ProfileDrawerProps) {
                   </div>
 
                   <Link target="_blank" href="/JasonTan-Resume.pdf">
-                    <RainbowButton
-                      className={`${buttonStyles} flex items-center self-center px-4 py-2 border border-neutral-800 rounded-lg hover:bg-neutral-800 transition-colors`}
+                    <Button
+                      variant="default"
+                      className="flex items-center self-center mt-2"
                     >
                       <File /> Resume
-                    </RainbowButton>
-                </Link>
+                    </Button>
+                  </Link>
                 </div>
 
                 {/* Mock content to demonstrate scrolling */}

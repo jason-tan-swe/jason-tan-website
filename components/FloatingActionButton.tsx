@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { User2, Network } from "lucide-react"
+import Button from "./ui/Button"
 
 interface FloatingActionButtonProps {
   isProfileView: boolean;
@@ -10,13 +11,19 @@ interface FloatingActionButtonProps {
 
 export default function FloatingActionButton({ isProfileView, onClick }: FloatingActionButtonProps) {
   return (
-    <motion.button
-      onClick={onClick}
-      className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-400 rounded-2xl shadow-lg flex items-center justify-center text-black hover:bg-emerald-300 transition-colors z-[999]"
+    <motion.div
+      className="fixed bottom-6 right-6 z-[999]"
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
     >
-      {isProfileView ? <Network className="w-6 h-6" /> : <User2 className="w-6 h-6" />}
-    </motion.button>
-  )
+      <Button
+        variant="floating"
+        size="floating"
+        onClick={onClick}
+        className="flex items-center justify-center"
+      >
+        {isProfileView ? <Network className="w-6 h-6" /> : <User2 className="w-6 h-6" />}
+      </Button>
+    </motion.div>
+  );
 }

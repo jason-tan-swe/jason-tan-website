@@ -92,16 +92,6 @@ const config: Config = {
   				'5': 'hsl(var(--chart-5))'
   			}
   		},
-  		animation: {
-  			rainbow: "rainbow var(--speed, 2s) infinite linear",
-  		},
-  		keyframes: {
-  			rainbow: {
-  				"0%": { "background-position": "0% 100%" },
-  				"50%": { "background-position": "200% 100%" },
-  				"100%": { "background-position": "0% 100%" },
-  			},
-  		}
   	}
   },
   plugins: [require("@tailwindcss/typography"), require("tailwindcss-animate")],
